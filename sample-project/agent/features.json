@@ -1,0 +1,159 @@
+{
+  "project": "test-basic",
+  "description": "Minimal harness pipeline validation project. Backend: FastAPI + SQLite. Frontend: Vue 3 + Vite proxying to backend. Tests the full init→implement→verify loop.",
+  "features": [
+    {
+      "id": "F01",
+      "phase": 1,
+      "name": "Backend Scaffold",
+      "description": "Create a minimal FastAPI backend. Required in backend/requirements.txt: fastapi, uvicorn[standard], sqlalchemy, pytest, httpx, anyio[trio]. Create backend/app/main.py with a FastAPI instance, CORS middleware allowing http://localhost:5173, and GET /api/health returning {\"status\":\"ok\"}. Create backend/app/database.py with SQLAlchemy SQLite engine (file: backend/data.db), Base = declarative_base(), SessionLocal, and a get_db() generator. Create backend/tests/conftest.py with an httpx AsyncClient fixture using ASGITransport and an in-memory SQLite DB (override get_db dependency). Create backend/tests/test_health.py that asserts GET /api/health returns 200 and {\"status\":\"ok\"}. Mark the conftest.py fixture with @pytest.mark.anyio so async tests work.",
+      "acceptance_criteria": [
+        "backend/requirements.txt exists with fastapi, uvicorn[standard], sqlalchemy, pytest, httpx, anyio[trio]",
+        "GET /api/health returns {\"status\": \"ok\"}",
+        "pytest backend/tests/test_health.py passes"
+      ],
+      "test_command": "pytest backend/tests/test_health.py -v",
+      "verify_commands": [
+        {
+          "name": "Backend import smoke",
+          "command": "python -c \"import sys; sys.path.insert(0,'backend'); import app.main; print('ok')\"",
+          "suite": "regression"
+        }
+      ],
+      "depends_on": [],
+      "docs_refs": ["docs/architecture.md", "docs/conventions.md"],
+      "user_story_refs": [],
+      "plan_required": true,
+      "plan_path": "docs/feature-plans/F01.md",
+      "task_board_path": "agent/feature-tasks/F01.json",
+      "integration_test_required": false,
+      "integration_test_plan_path": "",
+      "ui_verify": "off",
+      "ui_verify_target": "",
+      "expected_files": [
+        "backend/requirements.txt",
+        "backend/app/main.py",
+        "backend/app/database.py",
+        "backend/tests/conftest.py",
+        "backend/tests/test_health.py"
+      ],
+      "review_required": false,
+      "tech_tags": ["fastapi", "sqlalchemy", "sqlite", "pytest", "httpx"],
+      "passes": false
+    },
+    {
+      "id": "F02",
+      "phase": 1,
+      "name": "Frontend Scaffold",
+      "description": "Create a Vue 3 + Vite frontend scaffold. From the project root run: npm create vite@latest frontend -- --template vue. Then cd frontend && npm install && npm install axios. In frontend/vite.config.js add a server.proxy entry mapping /api to http://localhost:8000. Create frontend/src/api/client.js as an axios instance with baseURL '/api'. The build must complete: npm run build --prefix frontend. Do NOT mount the frontend in FastAPI — they are separate dev servers.",
+      "acceptance_criteria": [
+        "frontend/package.json exists with vue and vite dependencies",
+        "frontend/vite.config.js proxies /api to http://localhost:8000",
+        "frontend/src/api/client.js exports an axios instance",
+        "npm run build --prefix frontend completes without error"
+      ],
+      "test_command": "npm run build --prefix frontend",
+      "verify_commands": [
+        {
+          "name": "Backend still healthy",
+          "command": "pytest backend/tests/test_health.py -v",
+          "suite": "regression"
+        }
+      ],
+      "depends_on": ["F01"],
+      "docs_refs": ["docs/architecture.md", "docs/conventions.md"],
+      "user_story_refs": [],
+      "plan_required": true,
+      "plan_path": "docs/feature-plans/F02.md",
+      "task_board_path": "agent/feature-tasks/F02.json",
+      "integration_test_required": false,
+      "integration_test_plan_path": "",
+      "ui_verify": "off",
+      "ui_verify_target": "",
+      "expected_files": [
+        "frontend/package.json",
+        "frontend/vite.config.js",
+        "frontend/src/api/client.js",
+        "frontend/src/App.vue"
+      ],
+      "review_required": false,
+      "tech_tags": ["vue3", "vite", "axios", "npm"],
+      "passes": false
+    },
+    {
+      "id": "F03",
+      "phase": 2,
+      "name": "Item CRUD",
+      "description": "Add an Item resource. Create backend/app/models/item.py with SQLAlchemy model Item(id INTEGER PK, name TEXT NOT NULL, done BOOLEAN default False). Create backend/app/routers/items.py with: GET /api/items (list all, returns list of {id, name, done}), POST /api/items body {name: str} (create, returns 201 + item), DELETE /api/items/{id} (delete, returns 204). Register router in main.py with prefix='/api'. Call Base.metadata.create_all(bind=engine) in app startup (use @app.on_event('startup') or lifespan). Create backend/tests/test_items.py testing list (empty returns []), create (returns 201 + item), and delete (returns 204).",
+      "acceptance_criteria": [
+        "GET /api/items returns a JSON list",
+        "POST /api/items {\"name\": \"test\"} returns 201 with the created item",
+        "DELETE /api/items/{id} returns 204",
+        "pytest backend/tests/test_items.py passes"
+      ],
+      "test_command": "pytest backend/tests/test_items.py -v",
+      "verify_commands": [
+        {
+          "name": "All backend tests",
+          "command": "pytest backend/tests/ -v",
+          "suite": "regression"
+        }
+      ],
+      "depends_on": ["F01"],
+      "docs_refs": ["docs/architecture.md", "docs/conventions.md"],
+      "user_story_refs": [],
+      "plan_required": true,
+      "plan_path": "docs/feature-plans/F03.md",
+      "task_board_path": "agent/feature-tasks/F03.json",
+      "integration_test_required": false,
+      "integration_test_plan_path": "",
+      "ui_verify": "off",
+      "ui_verify_target": "",
+      "expected_files": [
+        "backend/app/models/item.py",
+        "backend/app/routers/items.py",
+        "backend/tests/test_items.py"
+      ],
+      "review_required": false,
+      "tech_tags": ["fastapi", "sqlalchemy", "sqlite", "pytest"],
+      "passes": false
+    },
+    {
+      "id": "F04",
+      "phase": 3,
+      "name": "Item List UI",
+      "description": "Build the Vue 3 item list feature. Create frontend/src/components/ItemList.vue: fetches GET /api/items on mount via the axios client, displays items in a <ul> with each item's name and a Delete button (calls DELETE /api/items/{id} then re-fetches). Create frontend/src/components/AddItem.vue: a form with a text input and Submit button that calls POST /api/items then emits 'added'. Update frontend/src/App.vue to compose AddItem and ItemList together. The page title (in App.vue or index.html) should be 'Pipetest'. npm run build must still pass.",
+      "acceptance_criteria": [
+        "frontend/src/components/ItemList.vue exists and fetches /api/items",
+        "frontend/src/components/AddItem.vue exists and posts to /api/items",
+        "frontend/src/App.vue composes both components",
+        "npm run build --prefix frontend completes without error"
+      ],
+      "test_command": "npm run build --prefix frontend",
+      "verify_commands": [
+        {
+          "name": "All backend tests still pass",
+          "command": "pytest backend/tests/ -v",
+          "suite": "regression"
+        }
+      ],
+      "depends_on": ["F02", "F03"],
+      "docs_refs": ["docs/architecture.md"],
+      "user_story_refs": [],
+      "plan_required": true,
+      "plan_path": "docs/feature-plans/F04.md",
+      "task_board_path": "agent/feature-tasks/F04.json",
+      "integration_test_required": false,
+      "integration_test_plan_path": "",
+      "ui_verify": "off",
+      "ui_verify_target": "",
+      "expected_files": [
+        "frontend/src/components/ItemList.vue",
+        "frontend/src/components/AddItem.vue"
+      ],
+      "review_required": false,
+      "tech_tags": ["vue3", "vite", "axios", "npm"],
+      "passes": false
+    }
+  ]
+}
