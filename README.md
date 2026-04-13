@@ -1,27 +1,64 @@
 # emberforge
 
-`emberforge` is an IDE skill for structured, recoverable software delivery.
+[中文说明](README.zh-CN.md) | English
 
-It is useful when you want planning, coding, verification, recovery, and reporting to follow one explicit contract inside an editor session.
+Build software with AI agents using a workflow that is recoverable, auditable, and dependency-aware.
+
+If this project helps your team ship with less rework and fewer broken handoffs, please consider starring it.
+
+## Why emberforge
+
+Most agent sessions fail on longer delivery because state drifts, verification is skipped, and failures are hard to resume.
+
+emberforge enforces one explicit contract for planning, coding, verification, recovery, and reporting.
+
+## Before vs After
+
+| Without structured workflow | With emberforge |
+|---|---|
+| Progress lives in chat memory | Progress is appended to `progress.jsonl` |
+| Verification is often ad-hoc | Verification order is explicit and repeatable |
+| Failures are hard to resume | `verification_fix` recovery is first-class |
+| Feature order is easy to break | Dependency-ready scheduling is built in |
+| Status reviews are manual | `emberforge-report.html` is regenerated automatically |
+
+## 60-Second Quick Start
+
+1. Prepare the required project files.
+2. Load this skill in your coding agent.
+3. Ask: Help me build an xxx project.
+
+Required project shape:
+
+- `{PROJECT_DIR}/development-plan.md`
+- `{PROJECT_DIR}/docs/README.md`
+- `{PROJECT_DIR}/docs/architecture.md`
+- `{PROJECT_DIR}/agent/features.json`
+
+See a concrete sample in [sample-project/](sample-project).
+
+Expected runtime artifacts after a healthy run:
+
+- `agent/run-state.json`
+- `agent/feature-memory/Fxx.json`
+- `agent/session-handoffs/`
+- `progress.jsonl`
+- `emberforge-report.html`
+
+Walkthrough: [demo.md](demo.md)
 
 ## Supported Agents
 
-emberforge works with any AI coding agent that supports custom skills or system prompts:
+emberforge works with any AI coding agent that supports custom skills or system prompts.
 
 | Agent | How to use |
-|-------|-----------|
-| **Claude Code** | Place skill in your project, then: *"Help me build xxx"* |
-| **Codex** | Load as a skill, then: *"Help me build xxx"* |
-| **OpenCode** | Load as a skill, then: *"Help me build xxx"* |
-| **Qclaw** | Load as a skill, then: *"Help me build xxx"* |
-| **OpenClaw** | Load as a skill, then: *"Help me build xxx"* |
-| **Cursor / Windsurf / Copilot** | Add to `.instructions.md` or equivalent, then: *"Help me build xxx"* |
-
-> **Quick start:** prepare your project files (`development-plan.md`, `features.json`, etc.), load the skill, and just say:
->
-> *"Help me build an xxx project"*
->
-> emberforge takes it from there: planning, coding, verification, and reporting, all in one structured flow.
+|---|---|
+| Claude Code | Place skill in your project, then: Help me build xxx |
+| Codex | Load as a skill, then: Help me build xxx |
+| OpenCode | Load as a skill, then: Help me build xxx |
+| Qclaw | Load as a skill, then: Help me build xxx |
+| OpenClaw | Load as a skill, then: Help me build xxx |
+| Cursor / Windsurf / Copilot | Add to .instructions.md or equivalent, then: Help me build xxx |
 
 ## What This Skill Does
 
@@ -35,59 +72,15 @@ emberforge works with any AI coding agent that supports custom skills or system 
 
 This is not a generic coding prompt. It is a skill with a concrete runtime contract.
 
-## Why It Exists
+## What Makes This Different
 
-Most coding-agent sessions fail on longer work because they lose state, skip verification, and recover poorly after failed runs.
-
-`emberforge` addresses that with one opinionated workflow:
-
-- planning before coding
-- task-by-task implementation
-- explicit completion gates
-- structured verification
-- durable recovery artifacts
-- audit-friendly event logs
-
-## Included Files
-
-- [SKILL.md](SKILL.md): canonical operating contract for the skill
-- [README.zh-CN.md](README.zh-CN.md): Chinese overview for this skill
-- [demo.md](demo.md): end-to-end walkthrough with expected artifacts
-- [agents/](agents): planner, coder, and reviewer role prompts
-- [references/workflow.md](references/workflow.md): lifecycle and scheduling rules
-- [references/feature-schema.md](references/feature-schema.md): `features.json` and task-board contract
-- [references/verification.md](references/verification.md): verification order and failure handling
-- [references/reporting.md](references/reporting.md): event log and HTML report contract
-- [references/gotcha-library.md](references/gotcha-library.md): implementation gotchas used during delivery
-
-## Required Project Shape
-
-The target project is expected to already contain:
-
-- `{PROJECT_DIR}/development-plan.md`
-- `{PROJECT_DIR}/docs/README.md`
-- `{PROJECT_DIR}/docs/architecture.md`
-- `{PROJECT_DIR}/agent/features.json`
-
-Strongly recommended:
-
-- `{PROJECT_DIR}/docs/conventions.md`
-
-## Runtime Artifacts This Skill Uses
-
-The skill does not invent a private `.skill-state.json`.
-
-It uses these runtime artifacts:
-
-- `agent/features.json`
-- `agent/run-state.json`
-- `agent/feature-memory/Fxx.json`
-- `agent/session-handoffs/`
-- `progress.jsonl`
-- `docs/project-lessons.md`
-- `emberforge-report.html`
-
-`features.json` remains the source of truth for completion via each feature's `passes` field.
+| Topic | Typical prompt workflow | emberforge |
+|---|---|---|
+| State model | Mostly chat-local | File-based runtime artifacts |
+| Recovery | Manual retry | Structured `verification_fix` context |
+| Feature completion | Subjective | Explicit gates + verification loop |
+| Scheduling | Usually implicit | Dependency-ready selection |
+| Reporting | Optional notes | Contracted event log + HTML report |
 
 ## How The Flow Works
 
@@ -100,14 +93,17 @@ It uses these runtime artifacts:
 7. On failure, persist structured recovery context and re-enter `verification_fix`.
 8. On success, mark the feature passed and refresh `emberforge-report.html`.
 
-## What Makes This Skill Different
+## Included Files
 
-`emberforge` is opinionated about delivery:
-
-- it uses the real runtime contract, not a simplified blog-post version
-- it treats verification failures as first-class state
-- it writes structured progress events instead of leaving state in chat history
-- it keeps project-relative paths scoped to `PROJECT_DIR`
+- [SKILL.md](SKILL.md): canonical operating contract for the skill
+- [README.zh-CN.md](README.zh-CN.md): Chinese overview for this skill
+- [demo.md](demo.md): end-to-end walkthrough with expected artifacts
+- [agents/](agents): planner, coder, and reviewer role prompts
+- [references/workflow.md](references/workflow.md): lifecycle and scheduling rules
+- [references/feature-schema.md](references/feature-schema.md): features.json and task-board contract
+- [references/verification.md](references/verification.md): verification order and failure handling
+- [references/reporting.md](references/reporting.md): event log and HTML report contract
+- [references/gotcha-library.md](references/gotcha-library.md): implementation gotchas used during delivery
 
 ## Source Of Truth
 
@@ -143,7 +139,4 @@ Contribution and disclosure guidelines live in:
 - [SECURITY.md](SECURITY.md)
 - [LICENSE](LICENSE)
 
-Additional docs:
-
-- Chinese README: [README.zh-CN.md](README.zh-CN.md)
-- Demo walkthrough: [demo.md](demo.md)
+If emberforge saves your team time, star the project to help more builders discover it.

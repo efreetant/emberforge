@@ -1,8 +1,64 @@
 # emberforge
 
-`emberforge` 是一个面向结构化、可恢复交付流程的 IDE skill。
+[English](README.md) | 中文
 
-如果你想在 IDE 会话里用一套明确的规划、编码、验证、恢复、报告契约来推进项目，这个 skill 就是给这个场景准备的。
+用 AI coding agent 做开发时，emberforge 提供一套可恢复、可审计、可按依赖推进的标准交付流程。
+
+如果这个项目帮你减少返工、提升交付稳定性，欢迎给一个 Star 支持。
+
+## 为什么用 emberforge
+
+很多 AI 开发会话在任务变长后会出现状态漂移、验证跳过、失败难恢复。
+
+emberforge 把规划、编码、验证、恢复、报告统一到一个明确契约里。
+
+## 改造前 vs 改造后
+
+| 没有结构化流程 | 使用 emberforge |
+|---|---|
+| 进度只在聊天里 | 进度写入 `progress.jsonl` |
+| 验证步骤随意 | 验证顺序固定且可复现 |
+| 失败后很难续跑 | `verification_fix` 有结构化恢复上下文 |
+| 容易越过依赖顺序 | 按 dependency-ready 自动调度 |
+| 状态汇报靠手工 | 自动刷新 `emberforge-report.html` |
+
+## 60 秒快速上手
+
+1. 准备目标项目的基础文件。
+2. 在你的 coding agent 中加载本 skill。
+3. 发送一句触发词：Help me build an xxx project.
+
+目标项目至少包含：
+
+- `{PROJECT_DIR}/development-plan.md`
+- `{PROJECT_DIR}/docs/README.md`
+- `{PROJECT_DIR}/docs/architecture.md`
+- `{PROJECT_DIR}/agent/features.json`
+
+可参考最小示例结构：[sample-project/](sample-project)
+
+健康运行后常见产物：
+
+- `agent/run-state.json`
+- `agent/feature-memory/Fxx.json`
+- `agent/session-handoffs/`
+- `progress.jsonl`
+- `emberforge-report.html`
+
+完整流程演示见 [demo.md](demo.md)
+
+## 支持的 Agent
+
+只要支持自定义 skill 或系统提示词的 AI coding agent，通常都可以接入。
+
+| Agent | 使用方式 |
+|---|---|
+| Claude Code | 将 skill 放到项目里后，发送 Help me build xxx |
+| Codex | 加载为 skill 后，发送 Help me build xxx |
+| OpenCode | 加载为 skill 后，发送 Help me build xxx |
+| Qclaw | 加载为 skill 后，发送 Help me build xxx |
+| OpenClaw | 加载为 skill 后，发送 Help me build xxx |
+| Cursor / Windsurf / Copilot | 写入 .instructions.md 或同类文件后发送 Help me build xxx |
 
 ## 这个 Skill 能做什么
 
@@ -14,24 +70,17 @@
 - 持续往 `progress.jsonl` 追加事件
 - 每次验证后刷新 `emberforge-report.html`
 
-它不是一个“泛用编码提示词”，而是一个带明确运行契约的 skill。
+它不是一个泛用编码提示词，而是一个带明确运行契约的 skill。
 
-## 它解决什么问题
+## 和普通提示词流程的区别
 
-普通 coding agent 做长任务时，常见问题是：
-
-- 会话一长就丢上下文
-- 验证不严格，甚至直接跳过
-- 跑挂以后没有结构化恢复信息
-- 过程只留在聊天记录里，不可审计
-
-`emberforge` 通过一套明确的交付模型来解决这些问题：
-
-- 先规划，再编码
-- 按 task 推进，不是一口气乱改
-- 完成前必须过 completion gates
-- 验证失败会留下结构化失败上下文
-- 进度、报告、handoff 都落盘
+| 维度 | 普通提示词流程 | emberforge |
+|---|---|---|
+| 状态模型 | 主要在会话内 | 以文件产物为中心 |
+| 失败恢复 | 依赖人工回忆 | `verification_fix` 结构化恢复 |
+| 完成标准 | 主观判断 | completion gate + verification loop |
+| 任务调度 | 常常隐式 | 依赖就绪后再执行 |
+| 汇报能力 | 零散笔记 | 事件日志 + HTML 报告 |
 
 ## 目录里有什么
 
@@ -127,3 +176,5 @@
 - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 安全策略：[SECURITY.md](SECURITY.md)
 - 许可证：[LICENSE](LICENSE)
+
+如果 emberforge 对你有帮助，欢迎 Star。你的支持会直接推动模板、验证契约和文档持续迭代。
