@@ -22,6 +22,8 @@ emberforge enforces one explicit contract for planning, coding, verification, re
 | Feature order is easy to break | Dependency-ready scheduling is built in |
 | Status reviews are manual | `emberforge-report.html` is regenerated automatically |
 
+![emberforge report sample](images/sample-report.png)
+
 ## 60-Second Quick Start
 
 1. Prepare the required project files.

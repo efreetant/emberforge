@@ -22,6 +22,8 @@ emberforge 把规划、编码、验证、恢复、报告统一到一个明确契
 | 容易越过依赖顺序 | 按 dependency-ready 自动调度 |
 | 状态汇报靠手工 | 自动刷新 `emberforge-report.html` |
 
+![emberforge 报告示例](images/sample-report.png)
+
 ## 60 秒快速上手
 
 1. 准备目标项目的基础文件。
