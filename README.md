@@ -10,18 +10,18 @@ emberforge works with any AI coding agent that supports custom skills or system 
 
 | Agent | How to use |
 |-------|-----------|
-| **Claude Code** | Place skill in your project, then: *"帮我开发 xxx"* |
-| **Codex** | Load as a skill, then: *"帮我开发 xxx"* |
-| **OpenCode** | Load as a skill, then: *"帮我开发 xxx"* |
-| **Qclaw** | Load as a skill, then: *"帮我开发 xxx"* |
-| **OpenClaw** | Load as a skill, then: *"帮我开发 xxx"* |
-| **Cursor / Windsurf / Copilot** | Add to `.instructions.md` or equivalent, then: *"帮我开发 xxx"* |
+| **Claude Code** | Place skill in your project, then: *"Help me build xxx"* |
+| **Codex** | Load as a skill, then: *"Help me build xxx"* |
+| **OpenCode** | Load as a skill, then: *"Help me build xxx"* |
+| **Qclaw** | Load as a skill, then: *"Help me build xxx"* |
+| **OpenClaw** | Load as a skill, then: *"Help me build xxx"* |
+| **Cursor / Windsurf / Copilot** | Add to `.instructions.md` or equivalent, then: *"Help me build xxx"* |
 
 > **Quick start:** prepare your project files (`development-plan.md`, `features.json`, etc.), load the skill, and just say:
 >
-> *"帮我开发一个 xxx 项目"*
+> *"Help me build an xxx project"*
 >
-> emberforge takes it from there — planning, coding, verification, and reporting, all in one structured flow.
+> emberforge takes it from there: planning, coding, verification, and reporting, all in one structured flow.
 
 ## What This Skill Does
 

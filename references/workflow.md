@@ -24,6 +24,21 @@ Before the core feature loop, the emberforge runs a two-phase initializer (once 
 Both phases are strict about NOT installing packages or creating application code.
 If either phase fails, the emberforge stops and requires re-running `--mode init`.
 
+## Invocation Rules
+
+Any user request that implies development work (including short prompts like `help me dev xxx`) must start from the standard lifecycle, not direct coding.
+
+Required order:
+1. Resolve target project and mode
+2. Run two-phase initialization when required (`agent/run-state.json` missing or `git_initialized=false`)
+3. Run preflight and read runtime artifacts (`agent/features.json`, `agent/run-state.json`, `progress.jsonl`, feature memory when present)
+4. Select next dependency-ready feature
+5. Run planning before coding when `plan_required=true`, or when planning fields/artifacts are missing
+
+Planning fallback:
+- missing `plan_required` is treated as `true`
+- missing/invalid `plan_path` or `task_board_path` must be repaired by planning before coding starts
+
 ## Core Loop
 
 For each dependency-ready feature:

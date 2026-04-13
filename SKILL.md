@@ -108,6 +108,28 @@ Available templates:
 
 The skill must follow this contract: during Phase 2, match templates by tag intersection, copy them, and wire `docs_refs`. The Phase 2 pass then **verifies** the result rather than doing the matching itself.
 
+## Invocation Guardrails (Do Not Skip)
+
+Any user request that implies software delivery must enter the full emberforge lifecycle, even when phrased casually.
+
+Treat all of the following as full workflow requests:
+- "help me dev xxx"
+- "help me build xxx"
+- "implement xxx"
+- "fix xxx"
+
+For those requests, do this in order and do not jump directly to coding:
+1. Step 0 (resolve target project and mode)
+2. Step 0.5 (two-phase initializer when required)
+3. Step 1 preflight (including runtime artifact reads)
+4. Step 2 feature selection
+5. Step 3 planning when required or when planning fields are missing/invalid
+6. Step 4+ execution and verification
+
+Planning fallback rules:
+- if `plan_required` is missing on a feature, treat it as `true`
+- if `plan_path` or `task_board_path` is missing/invalid, run planner and repair those fields before coding
+
 ## Step 0 — Resolve the Target Project
 
 Extract or confirm:
@@ -198,6 +220,9 @@ Show:
 ## Step 3 — Plan If Needed
 
 If `plan_required == true` and the feature plan / task board are missing or stale, run the planner.
+
+If `plan_required` is missing, treat it as `true`.
+If `plan_path` or `task_board_path` is missing/invalid, run planner first and repair the feature metadata before any coding.
 
 Planner output must match the current emberforge tool contract:
 - plan markdown at `feature.plan_path`
