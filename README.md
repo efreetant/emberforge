@@ -4,8 +4,6 @@
 
 Build software with AI agents using a workflow that is recoverable, auditable, and dependency-aware.
 
-If this project helps your team ship with less rework and fewer broken handoffs, please consider starring it.
-
 ## Why emberforge
 
 Most agent sessions fail on longer delivery because state drifts, verification is skipped, and failures are hard to resume.
